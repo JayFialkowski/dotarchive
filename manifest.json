@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+
+  "name": "DotArchive",
+  "description": "This extension will provide recent professional DotA matches, as well as links to their VODs.",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "dotarchive.html",
+    "default_title": "DotArchive"
+  },
+  "permissions": [
+  ]
+}
