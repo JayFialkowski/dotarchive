@@ -1,13 +1,15 @@
+console.log("testing");
 $(document).ready(function() {
-	alert($(document));
+	console.log("ready");
 	$.ajax({
 		url: 'http://www.gosugamers.net/dota2/gosubet',
 		type: "GET",
 		dataType: "html",
 		success: function(data)
 		{
+			console.log('success');
 			parseHTML(data);
-		}
+		},
 	});
 });
 function parseHTML(data) {
@@ -54,5 +56,6 @@ function parseHTML(data) {
 	}
 }
 function appendToTable(url,tournament) {
-	console.log(url);
+	$("#recentmatches").empty();
+	console.log(url+"|"+tournament);
 }
