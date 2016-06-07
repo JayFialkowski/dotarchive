@@ -10,6 +10,10 @@
     "default_popup": "dotarchive.html",
     "default_title": "DotArchive"
   },
-  "permissions": [
+  "background": {  
+      "scripts": ["jquery-1.12.4.min.js", "dotarchive.js"]
+  },
+  "permissions": [ 
+    "http://www.gosugamers.net/dota2/gosubet"
   ]
 }
