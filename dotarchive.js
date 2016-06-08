@@ -1,61 +1,62 @@
 $(document).ready(function() {
 	$.ajax({
-		url: 'http://www.gosugamers.net/dota2/gosubet',
+		url: 'http://www.gosugamers.net/dota2/vods',
 		type: "GET",
 		dataType: "html",
 		success: function(data)
 		{
 			parseHTML(data);
+			$(".clickable-cell").click(function() {
+				window.open(($(this).parent().attr("data-href")), '_blank');
+				// chrome.storage.sync.set({'test': 'testing'}, function() {
+	   //        		console.log('Settings saved');
+    //     		});
+			});
+			$(".glyphicon-eye-open").click(function() {
+				console.log("hide this row");
+			});
 		},
 	});
-    $(".clickable-row").click(function() {
-        console.log('click');
-    });
+
 });
 
 function parseHTML(data) {
 	// strip newlines and tabs because those are annoying
 	data = data.replace(/(\r\n|\n|\r)/gm,"");
-	
-	// recentMatchesBlock is the contents of the <tbody>, containing recent matches.
-	// this will make it easier to strip individual data
-	var recentMatchesBlockPattern = /Dota 2 Recent Results .+? <tbody>(.+?)<\/tbody>/i;
-	var recentMatchesBlock = recentMatchesBlockPattern.exec(data)[1];
 
-	// iterate through each <tr>, which contains one match
-	var ptrn = /<tr>(.+?)<\/tr>/ig;
+	var tablePattern = /<h1>Dota 2 VODs<\/h1>.+?<tbody>(.+?)<\/tbody>/i;
+	var tableBlock = tablePattern.exec(data);
+
+	var pattern = /<tr>(.+?)<\/tr>/ig;
 	var match;
-	
-	while ((match = ptrn.exec(recentMatchesBlock)) != null )
-	{
+
+	while ((match=pattern.exec(tableBlock[1]))!=null) {
 		var raw = match[1];
 		var urlPattern = /<a href=\"(.+?)\"/i;
 		var tournamentPattern = /<a .+?span&gt;(.+?)( \(.+?\))?\&/i;
+		var addedPattern = /<td><span class=.added.>(.+?)<\/span>/i;
 		var team1NamePattern = /<span class=\"opp opp1\">.+?<span>(.+?)<\/span>/i;
 		var team2NamePattern = /<span class=\"opp opp2\">.+?<span>(.+?)<\/span>/i;
 		var team1FlagPattern = /<span.+?opp1.+?<span title=.+?class="(.+?)"/i;
 		var team2FlagPattern = /<span.+?opp2.+?<span title=.+?class="(.+?)"/i;
-		var team1OddsPattern = /<span class=".+?bet1">\((.+?)\)<\/span>/i;
-		var team2OddsPattern = /<span class=".+?bet2">\((.+?)\)<\/span>/i;
 
-		var url = urlPattern.exec(raw)[1];
+		var url = "http://www.gosugamers.net"+urlPattern.exec(raw)[1];
 		var tournament = tournamentPattern.exec(raw)[1];
+		var added = addedPattern.exec(raw)[1];
 		var team1Name = team1NamePattern.exec(raw)[1];
 		var team2Name = team2NamePattern.exec(raw)[1];
 		var team1Flag = team1FlagPattern.exec(raw)[1];
 		var team2Flag = team2FlagPattern.exec(raw)[1];
-		var team1Odds = team1OddsPattern.exec(raw)[1];
-		var team2Odds = team2OddsPattern.exec(raw)[1];
-
-		appendToTable(url,tournament,team1Name,team1Odds,team2Name,team2Odds);
+		appendToTable(url,tournament,added,team1Name,team2Name);
 	}
-	$("#loadingmsg").hide();
 }
-function appendToTable(url,tournament,team1Name,team1Odds,team2Name,team2Odds) {
-	var row = "<tr class=\"clickable-row\">";
-	row += "<td><span class=\"glyphicon glyphicon-eye-open\"></span></td>"; // seen or not seen
-	row += "<td><h6>"+team1Name+" ("+team1Odds+") vs "+team2Name+" ("+team2Odds+")</h6></td>";
-	row += "<td><h6>"+tournament+"</h6></td>";
+function appendToTable(url,tournament,added,team1Name,team2Name) {
+	//data-href='url://'
+	var row = "<tr data-href='"+url+"'>";
+	//row += "<td><span class='glyphicon glyphicon-eye-open'></span></td>"; // seen or not seen
+	row += "<td class='clickable-cell'><h6><strong>"+team1Name+"</strong> vs <strong>"+team2Name+"</strong></h6></td>";
+	row += "<td class='clickable-cell'><h6><strong>"+tournament+"</strong></h6></td>";
+	row += "<td class='clickable-cell'><h6><strong>"+added+"</strong></h6></td>";
 	row += "</tr>";
-	$('#recentmatches').append(row);
+	$('tbody').append(row);
 }
