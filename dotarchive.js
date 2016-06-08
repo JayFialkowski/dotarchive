@@ -1,13 +1,10 @@
-console.log("testing");
 $(document).ready(function() {
-	console.log("ready");
 	$.ajax({
 		url: 'http://www.gosugamers.net/dota2/gosubet',
 		type: "GET",
 		dataType: "html",
 		success: function(data)
 		{
-			console.log('success');
 			parseHTML(data);
 		},
 	});
@@ -25,6 +22,10 @@ function parseHTML(data) {
 	var ptrn = /<tr>(.+?)<\/tr>/ig;
 	var match;
 
+	//set up for popup update
+	$("#recentmatches").empty();
+	$('body').css('font-size', '10px');
+	
 	while ((match = ptrn.exec(recentMatchesBlock)) != null )
 	{
 		var raw = match[1];
@@ -47,15 +48,14 @@ function parseHTML(data) {
 		var team1Odds = team1OddsPattern.exec(raw)[1];
 		var team2Odds = team2OddsPattern.exec(raw)[1];
 
-		// console.log(tournament);
-		// console.log(url);
-		// console.log(team1Name + "|" + team1Flag + "|" + team1Odds);
-		// console.log(team2Name + "|" + team2Flag + "|" + team2Odds);
-		// console.log("\n\n\n");
-		appendToTable(url,tournament);
+		appendToTable(url,tournament,team1Name,team1Odds,team2Name,team2Odds);
 	}
 }
-function appendToTable(url,tournament) {
-	$("#recentmatches").empty();
-	console.log(url+"|"+tournament);
+function appendToTable(url,tournament,team1Name,team1Odds,team2Name,team2Odds) {
+	var row = "<tr>";
+	row += "<td><span class=\"glyphicon glyphicon-eye-open\"></span></td>"; // seen or not seen
+	row += "<td>"+team1Name+" ("+team1Odds+") vs "+team2Name+" ("+team2Odds+")</td>";
+	row += "<td>"+tournament+"</td>";
+	row += "</tr>";
+	$('#recentmatches').append(row);
 }
