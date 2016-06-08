@@ -6,17 +6,19 @@ $(document).ready(function() {
 		success: function(data) 
 		// enter ajax success callback function
 		{
+			$("#clearhidden").blur(); // remove focus from the button
 			chrome.storage.sync.get(null,function(items) {
 				var hiddenMatches;
 				if (items['matches']) hiddenMatches = items['matches'];
 				else hiddenMatches = [];
 				parseHTML(data,hiddenMatches);
 				$(".clickable-cell").click(function() {
-					//window.open(($(this).parent().attr("data-href")), '_blank');
+					window.open(($(this).parent().attr("data-href")), '_blank');
 					updateHiddenMatches($(this).parent().attr("data-href"));
 				});
 				$(".glyphicon-eye-open").click(function() {
-					console.log("hide this row");
+					updateHiddenMatches($(this).parent().parent().attr("data-href"));
+					$(this).parent().parent().hide();
 				});
 				$("#clearhidden").click(function() {
 					chrome.storage.sync.clear();
@@ -43,7 +45,6 @@ function updateHiddenMatches(matchURL) {
 }
 
 function parseHTML(data,hiddenMatches) {
-
 	console.log(hiddenMatches);
 
 	// strip newlines and tabs because those are annoying
@@ -54,7 +55,6 @@ function parseHTML(data,hiddenMatches) {
 
 	var pattern = /<tr>(.+?)<\/tr>/ig;
 	var match;
-
 	
 	while ((match=pattern.exec(tableBlock[1]))!=null) {
 		var raw = match[1];
@@ -69,8 +69,8 @@ function parseHTML(data,hiddenMatches) {
 		var url = "http://www.gosugamers.net"+urlPattern.exec(raw)[1];
 		var tournament = tournamentPattern.exec(raw)[1];
 		var added = addedPattern.exec(raw)[1];
-		var team1Name = team1NamePattern.exec(raw)[1];
-		var team2Name = team2NamePattern.exec(raw)[1];
+		var team1Name = team1NamePattern.exec(raw)[1].replace("Dota 2","");
+		var team2Name = team2NamePattern.exec(raw)[1].replace("Dota 2","");
 		var team1Flag = team1FlagPattern.exec(raw)[1];
 		var team2Flag = team2FlagPattern.exec(raw)[1];
 		if (hiddenMatches.indexOf(url) < 0) appendToTable(url,tournament,added,team1Name,team2Name);
@@ -79,8 +79,8 @@ function parseHTML(data,hiddenMatches) {
 function appendToTable(url,tournament,added,team1Name,team2Name) {
 	//data-href='url://'
 	var row = "<tr data-href='"+url+"'>";
-	//row += "<td><span class='glyphicon glyphicon-eye-open'></span></td>"; // seen or not seen
-	row += "<td class='clickable-cell'><h6><strong>"+team1Name+"</strong> vs <strong>"+team2Name+"</strong></h6></td>";
+	row += "<td><span class='glyphicon glyphicon-eye-open'></span></td>"; // seen or not seen
+	row += "<td class='clickable-cell text-center'><h6><strong>"+team1Name+"</strong><br>vs<br><strong>"+team2Name+"</strong></h6></td>";
 	row += "<td class='clickable-cell'><h6><strong>"+tournament+"</strong></h6></td>";
 	row += "<td class='clickable-cell'><h6><strong>"+added+"</strong></h6></td>";
 	row += "</tr>";
