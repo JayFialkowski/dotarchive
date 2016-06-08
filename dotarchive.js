@@ -8,7 +8,11 @@ $(document).ready(function() {
 			parseHTML(data);
 		},
 	});
+    $(".clickable-row").click(function() {
+        console.log('click');
+    });
 });
+
 function parseHTML(data) {
 	// strip newlines and tabs because those are annoying
 	data = data.replace(/(\r\n|\n|\r)/gm,"");
@@ -21,17 +25,12 @@ function parseHTML(data) {
 	// iterate through each <tr>, which contains one match
 	var ptrn = /<tr>(.+?)<\/tr>/ig;
 	var match;
-
-	//set up for popup update
-	$("#recentmatches").empty();
-	$('body').css('font-size', '10px');
 	
 	while ((match = ptrn.exec(recentMatchesBlock)) != null )
 	{
 		var raw = match[1];
-		
 		var urlPattern = /<a href=\"(.+?)\"/i;
-		var tournamentPattern = /<a .+?span&gt;(.+?)\&/i;
+		var tournamentPattern = /<a .+?span&gt;(.+?)( \(.+?\))?\&/i;
 		var team1NamePattern = /<span class=\"opp opp1\">.+?<span>(.+?)<\/span>/i;
 		var team2NamePattern = /<span class=\"opp opp2\">.+?<span>(.+?)<\/span>/i;
 		var team1FlagPattern = /<span.+?opp1.+?<span title=.+?class="(.+?)"/i;
@@ -50,12 +49,13 @@ function parseHTML(data) {
 
 		appendToTable(url,tournament,team1Name,team1Odds,team2Name,team2Odds);
 	}
+	$("#loadingmsg").hide();
 }
 function appendToTable(url,tournament,team1Name,team1Odds,team2Name,team2Odds) {
-	var row = "<tr>";
+	var row = "<tr class=\"clickable-row\">";
 	row += "<td><span class=\"glyphicon glyphicon-eye-open\"></span></td>"; // seen or not seen
-	row += "<td>"+team1Name+" ("+team1Odds+") vs "+team2Name+" ("+team2Odds+")</td>";
-	row += "<td>"+tournament+"</td>";
+	row += "<td><h6>"+team1Name+" ("+team1Odds+") vs "+team2Name+" ("+team2Odds+")</h6></td>";
+	row += "<td><h6>"+tournament+"</h6></td>";
 	row += "</tr>";
 	$('#recentmatches').append(row);
 }
