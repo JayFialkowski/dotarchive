@@ -3,24 +3,49 @@ $(document).ready(function() {
 		url: 'http://www.gosugamers.net/dota2/vods',
 		type: "GET",
 		dataType: "html",
-		success: function(data)
+		success: function(data) 
+		// enter ajax success callback function
 		{
-			parseHTML(data);
-			$(".clickable-cell").click(function() {
-				window.open(($(this).parent().attr("data-href")), '_blank');
-				// chrome.storage.sync.set({'test': 'testing'}, function() {
-	   //        		console.log('Settings saved');
-    //     		});
+			chrome.storage.sync.get(null,function(items) {
+				var hiddenMatches;
+				if (items['matches']) hiddenMatches = items['matches'];
+				else hiddenMatches = [];
+				parseHTML(data,hiddenMatches);
+				$(".clickable-cell").click(function() {
+					//window.open(($(this).parent().attr("data-href")), '_blank');
+					updateHiddenMatches($(this).parent().attr("data-href"));
+				});
+				$(".glyphicon-eye-open").click(function() {
+					console.log("hide this row");
+				});
+				$("#clearhidden").click(function() {
+					chrome.storage.sync.clear();
+				});
 			});
-			$(".glyphicon-eye-open").click(function() {
-				console.log("hide this row");
-			});
-		},
+		}
 	});
-
 });
 
-function parseHTML(data) {
+function updateHiddenMatches(matchURL) {
+	chrome.storage.sync.get(null,function(items) {
+		var matches;
+		if (items['matches']) {
+			matches = items['matches'];
+			matches.push(matchURL);
+			if (matches.length > 30)
+				matches.shift();
+		} else {
+			matches = [matchURL];
+		}
+		console.log("hiding "+matchURL);
+		chrome.storage.sync.set({"matches":matches});
+	});
+}
+
+function parseHTML(data,hiddenMatches) {
+
+	console.log(hiddenMatches);
+
 	// strip newlines and tabs because those are annoying
 	data = data.replace(/(\r\n|\n|\r)/gm,"");
 
@@ -30,6 +55,7 @@ function parseHTML(data) {
 	var pattern = /<tr>(.+?)<\/tr>/ig;
 	var match;
 
+	
 	while ((match=pattern.exec(tableBlock[1]))!=null) {
 		var raw = match[1];
 		var urlPattern = /<a href=\"(.+?)\"/i;
@@ -47,7 +73,7 @@ function parseHTML(data) {
 		var team2Name = team2NamePattern.exec(raw)[1];
 		var team1Flag = team1FlagPattern.exec(raw)[1];
 		var team2Flag = team2FlagPattern.exec(raw)[1];
-		appendToTable(url,tournament,added,team1Name,team2Name);
+		if (hiddenMatches.indexOf(url) < 0) appendToTable(url,tournament,added,team1Name,team2Name);
 	}
 }
 function appendToTable(url,tournament,added,team1Name,team2Name) {
