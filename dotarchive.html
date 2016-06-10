@@ -14,13 +14,11 @@
 	<div class="navbar-header">
 		<ul class="nav nav-tabs" role="tablist">
 			<li role="presentation" class="active">
-				<a href="#home" aria-controls="home" role="tab" data-toggle="tab" class="glyphicon glyphicon-inbox"></a>
+				<a id="hometab" href="#home" aria-controls="home" role="tab" data-toggle="tab" class="glyphicon glyphicon-inbox"></a>
 			</li>
-			<!-- HIDE FROM PRODUCTION
 			<li role="presentation">
 				<a href="#settings" aria-controls="settings" role="tab" data-toggle="tab" class="glyphicon glyphicon-cog"></a>
 			</li>
-			-->
 		</ul>
 	</div>
 	<!-- Tab panes -->
@@ -28,10 +26,23 @@
 		<div role="tabpanel" class="tab-pane fade in active" id="home">
 			<table id="recentmatches" class="table table-hover">
 				<tbody>
+					<!-- container for matches -->
 				</tbody>
 			</table>
 		</div>
-		<div role="tabpanel" class="tab-pane fade" id="settings">settings</div>
+		<div role="tabpanel" class="tab-pane fade" id="settings">
+			<br>
+			<div style="padding:5px;">
+				<div class="panel panel-default">
+				  <div class="panel-body">
+					<button id="clearhidden" type="button" class="btn btn-danger btn-block">Un-Hide All Matches</button>
+				  </div>
+				</div>
+				<ul id="hiddenmatches" class="list-group">
+					<!-- container for hidden matches -->
+				</ul>
+			</div>
+		</div>
 	</div>
 </body>
 </html>
