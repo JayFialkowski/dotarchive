@@ -63,8 +63,8 @@ function parseHTML(data,hiddenMatches) {
 		var addedPattern = /<td><span class=.added.>(.+?)<\/span>/i;
 		var team1NamePattern = /<span class=\"opp opp1\">.+?<span>(.+?)<\/span>/i;
 		var team2NamePattern = /<span class=\"opp opp2\">.+?<span>(.+?)<\/span>/i;
-		var team1FlagPattern = /<span.+?opp1.+?<span title=.+?class="(.+?)"/i;
-		var team2FlagPattern = /<span.+?opp2.+?<span title=.+?class="(.+?)"/i;
+		var team1FlagPattern = /<span.+?opp1.+?<span title=.+?class="flag (.+?)"/i;
+		var team2FlagPattern = /<span.+?opp2.+?<span title=.+?class="flag (.+?)"/i;
 
 		var url = "http://www.gosugamers.net"+urlPattern.exec(raw)[1];
 		var tournament = tournamentPattern.exec(raw)[1];
@@ -73,16 +73,16 @@ function parseHTML(data,hiddenMatches) {
 		var team2Name = team2NamePattern.exec(raw)[1].replace("Dota 2","");
 		var team1Flag = team1FlagPattern.exec(raw)[1];
 		var team2Flag = team2FlagPattern.exec(raw)[1];
-		if (hiddenMatches.indexOf(url) < 0) appendToTable(url,tournament,added,team1Name,team2Name);
+		console.log(team1Flag);
+		if (hiddenMatches.indexOf(url) < 0) appendToTable(url,tournament,added,team1Name,team1Flag,team2Name,team2Flag);
 	}
 }
-function appendToTable(url,tournament,added,team1Name,team2Name) {
+function appendToTable(url,tournament,added,team1Name,team1Flag,team2Name,team2Flag) {
 	//data-href='url://'
 	var row = "<tr data-href='"+url+"'>";
-	row += "<td><span class='glyphicon glyphicon-eye-open'></span></td>"; // seen or not seen
-	row += "<td class='clickable-cell text-center'><h6><strong>"+team1Name+"</strong><br>vs<br><strong>"+team2Name+"</strong></h6></td>";
-	row += "<td class='clickable-cell'><h6><strong>"+tournament+"</strong></h6></td>";
-	row += "<td class='clickable-cell'><h6><strong>"+added+"</strong></h6></td>";
+	row += "<td><br><span class='glyphicon glyphicon-eye-open'></span></td>"; // seen or not seen
+	row += "<td class='clickable-cell text-center'><img class='flag' src='./assets/flags/"+team1Flag+".png'/>"+team1Name+"<br>vs<br><img class='flag' src='./assets/flags/"+team2Flag+".png'/>"+team2Name+"</td>";
+	row += "<td class='clickable-cell'>"+tournament+"<br><br>"+added+"</td>";
 	row += "</tr>";
 	$('tbody').append(row);
 }
