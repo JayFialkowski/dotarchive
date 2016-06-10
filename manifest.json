@@ -11,7 +11,7 @@
     "default_title": "DotArchive"
   },
   "permissions": [ 
-    "http://www.gosugamers.net/dota2/gosubet",
+    "http://www.gosugamers.net/*",
     "storage"
   ],
   "content_security_policy": "script-src 'self' https://ajax.googleapis.com https://maxcdn.bootstrapcdn.com; object-src 'self'"

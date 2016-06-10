@@ -34,7 +34,7 @@ function updateHiddenMatches(matchURL) {
 		if (items['matches']) {
 			matches = items['matches'];
 			matches.push(matchURL);
-			if (matches.length > 30)
+			if (matches.length > 50)
 				matches.shift();
 		} else {
 			matches = [matchURL];
