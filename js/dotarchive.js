@@ -14,43 +14,39 @@ $(document).ready(function() {
 
 				parseHTML(data,hiddenMatches);
 				propagateSettings(hiddenMatches);
-
-				$(".clickable-cell").click(function() {
-					window.open(($(this).parent().attr("data-href")), '_blank');
-					hideMatch($(this).parent().attr("data-href"));
-				});
-				$(".glyphicon-eye-open").click(function() {
-					hideMatch($(this).parent().parent().attr("data-href"));
-					$(this).parent().parent().hide();
-				});
-				$("#clearhidden").click(function() {
-					chrome.storage.sync.clear();
-				});
-				$(".unhide").click(function() {
-					$(this).parent().remove();
-					unhideMatch($(this).siblings('span').text());
-				});
+				jq(data);
 			});
 		}
 	});
 });
-/*
- * TODO: this method should display all matches from hiddenmatches *AFTER* it has been updated
-*/
+function jq(data) {
+	$(".clickable-cell").click(function() {
+		window.open(($(this).parent().attr("data-href")), '_blank');
+		hideMatch($(this).parent().attr("data-href"));
+	});
+	$(".glyphicon-eye-open").click(function() {
+		hideMatch($(this).parent().parent().attr("data-href"));
+		$(this).parent().parent().hide();
+	});
+	$("#clearhidden").click(function() {
+
+		$("#hiddenmatches").empty();
+		$("#recentmatches tbody").empty();
+		parseHTML(data,[]);
+		chrome.storage.sync.clear();
+		jq(data);
+	});
+}
 function propagateSettings(hiddenMatches) {
-	console.log(hiddenMatches);
+	$("#hiddenmatches").empty();
 	for (var i=0;i<hiddenMatches.length;i++) {
 		var row = "";
 		row += "<li class='list-group-item'>";
-		row += "<button type='button' class='btn btn-default unhide'><span class='glyphicon glyphicon-share'></span></button>";
 		row += "<span>"+hiddenMatches[i].replace("http://www.gosugamers.net/dota2/tournaments","...")+"</span>";
 		row += "</li>";
 		$("#hiddenmatches").append(row);
 	}
 }
-/*
- * TODO: this method should update hiddenmatches and hide the appropriate items
-*/
 function hideMatch(matchURL) {
 	chrome.storage.sync.get(null,function(items) {
 		var matches;
@@ -63,24 +59,9 @@ function hideMatch(matchURL) {
 			matches = [matchURL];
 		}
 		chrome.storage.sync.set({"matches":matches});
+		propagateSettings(matches);
 	});
 }
-/*
- * TODO: this method should update hiddenmatches and unhide the appropriate items
-*/
-function unhideMatch(matchURL) {
-	matchURL = matchURL.replace("...","http://www.gosugamers.net/dota2/tournaments");
-	chrome.storage.sync.get(null,function(items) {
-		var hiddenMatches;
-		if (items['matches']) hiddenMatches = items['matches'];
-		else hiddenMatches = [];
-		hiddenMatches.splice(hiddenMatches.indexOf(matchURL),1);
-		console.log(hiddenMatches);
-	});
-}
-/*
- * TODO: this should display **all matches** and depend on the appropriate ones to be hidden
-*/
 function parseHTML(data,hiddenMatches) {
 	// strip newlines and tabs because those are annoying
 	data = data.replace(/(\r\n|\n|\r)/gm,"");
@@ -108,9 +89,8 @@ function parseHTML(data,hiddenMatches) {
 		var team2Name = team2NamePattern.exec(raw)[1].replace("Dota 2","");
 		var team1Flag = team1FlagPattern.exec(raw)[1];
 		var team2Flag = team2FlagPattern.exec(raw)[1];
-		appendToTable(url,tournament,added,team1Name,team1Flag,team2Name,team2Flag);
+		if (hiddenMatches.indexOf(url) < 0) appendToTable(url,tournament,added,team1Name,team1Flag,team2Name,team2Flag);
 	}
-	syncHiddenMatches();
 }
 function appendToTable(url,tournament,added,team1Name,team1Flag,team2Name,team2Flag) {
 	//data-href='url://'
@@ -120,11 +100,4 @@ function appendToTable(url,tournament,added,team1Name,team1Flag,team2Name,team2F
 	row += "<td class='clickable-cell'>"+tournament+"<br><br>"+added+"</td>";
 	row += "</tr>";
 	$('tbody').append(row);
-}
-
-/*
- * TODO: This method should grab all of hiddenmatches. If any match is not found on the match list (hidden or not) remove it from array
-*/
-function syncHiddenMatches() {
-
 }
