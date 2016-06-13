@@ -3,7 +3,7 @@
 
   "name": "DotArchive",
   "description": "This extension will provide recent professional DotA matches, as well as links to their VODs.",
-  "version": "1.1.0",
+  "version": "1.1.1",
 
   "browser_action": {
     "default_icon": "assets/icon.png",
